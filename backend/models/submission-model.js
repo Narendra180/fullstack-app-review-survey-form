@@ -14,7 +14,7 @@ const submissionSchema = mongoose.Schema({
     required: true,
     default: undefined,
     enum: {
-      values: ["information", "chat", "entertainment", "buy", "socialize", "other"],
+      values: ["information", "chat", "entertainment", "buy", "socialize", "others"],
       message: `{value} is not valid.`
     }, 
     validate: {

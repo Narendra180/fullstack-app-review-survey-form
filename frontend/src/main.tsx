@@ -1,10 +1,30 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import './index.css'
+import SurveyForm from './pages/survey-form/survey-form.tsx'
+import SubmissionResult from './pages/submission-result/submission-result.tsx'
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <App />,
+    children: [
+      {
+        path: "/",
+        element: <SurveyForm />
+      },
+      {
+        path: "/submission/:id",
+        element: <SubmissionResult />
+      }
+    ]
+  }
+]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <App />
+    <RouterProvider router={router} />
   </React.StrictMode>,
 )
