@@ -9,12 +9,20 @@ const submissionSchema = mongoose.Schema({
       message: `{value} is not valid.`
     }
   },
-  appGoal: {
-    type: String,
+  appGoals: {
+    type: [String],
     required: true,
+    default: undefined,
     enum: {
       values: ["information", "chat", "entertainment", "buy", "socialize", "other"],
       message: `{value} is not valid.`
+    }, 
+    validate: {
+      validator: function (value) {
+        if(value.length) return true;
+        return false;
+      }, 
+      message: (props) => `appGoals array length must greater than or equal to one.`
     }
   },
   userExperienceRating: {
@@ -31,6 +39,7 @@ const submissionSchema = mongoose.Schema({
   },
   dateOfBirth: {
     type: Date,
+    default: null,
     validate: {
       validator: function(value) {
         const receivedDate = value;
