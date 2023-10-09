@@ -109,7 +109,7 @@ const SurveyForm = () => {
       justifyContent="center"
     >
       <Grid 
-        item xs={11} sm={8}
+        item xs={11} sm={8} md={7} lg={6}
         className="form-container"
       >
         

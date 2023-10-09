@@ -13,3 +13,9 @@ export const isValidDate = (date: Moment) => {
     return false;
   }
 }
+
+export function capitalizeFirstLetter(string: string) {
+  const strings = string.split(" ");
+  const capitalizedStrs = strings.map(str => str[0].toUpperCase()+str.slice(1));
+  return capitalizedStrs.join(" ");
+}

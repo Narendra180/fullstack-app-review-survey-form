@@ -4,3 +4,16 @@
   padding: 2rem;
   border-radius: 20px;
 }
+
+.submission-result-heading, .result-container {
+  margin-bottom: 30px;
+}
+
+.question-heading {
+  margin-bottom: 1rem;
+}
+
+.selected-answer-p {
+  font-size: 1.125rem;
+  font-weight: 500;
+}

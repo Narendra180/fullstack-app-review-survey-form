@@ -6,7 +6,6 @@ import './index.css'
 import SurveyForm from './pages/survey-form/survey-form.tsx'
 import SubmissionResult from './pages/submission-result/submission-result.tsx'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
-import { red } from '@mui/material/colors'
 
 
 const theme = createTheme({
