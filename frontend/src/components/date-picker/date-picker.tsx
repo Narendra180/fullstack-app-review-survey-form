@@ -7,15 +7,18 @@ import { Moment } from 'moment';
 type DatePickerProps = {
   onChange(event: any): void,
   name: string,
-  value: Moment | null
+  value: Moment | null,
+  className?: string,
+  errorString: string | undefined
 }
 
-const DatePicker = ({ onChange, name, value }: DatePickerProps) => {
+const DatePicker = ({ onChange, name, value, className, errorString }: DatePickerProps) => {
   const handleChange = (value: any) => {
     onChange({target: { name, value }})
   }
   return (
     <FormControl
+      className={`date-picker-form-control form-control ${className}`}
       fullWidth
     >
       <label
@@ -35,6 +38,7 @@ const DatePicker = ({ onChange, name, value }: DatePickerProps) => {
           value={value}
         />
       </LocalizationProvider>
+      {errorString && <p className="error-p">{errorString}</p>}
     </FormControl>
   )
 }

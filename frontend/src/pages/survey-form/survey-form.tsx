@@ -1,18 +1,26 @@
-import { useEffect, useState } from 'react';
-import { Select, MenuItem, FormControl, InputLabel, Checkbox, ListItemText, TextField, Button } from '@mui/material';
+import { useState, useRef } from 'react';
+import { Select, MenuItem, FormControl, InputLabel, Checkbox, ListItemText, TextField, Button, Grid, OutlinedInput } from '@mui/material';
 import Slider from '@mui/material/Slider';
 import { useNavigate } from 'react-router-dom';
 import "./survey-form.css";
 import DatePicker from '../../components/date-picker/date-picker';
 import { DefaultFormStateType, BodyDataType } from '../../types/types';
 import { defaultStateValues, userExperienceRatingSliderMarks, appGoalsValues } from '../../constants/constants';
+import { isValidDate } from '../../utils/utils';
 
 
 const SurveyForm = () => {
 
-  const [state, setState] = useState<DefaultFormStateType>({...defaultStateValues});
+  const [state, setState] = useState<DefaultFormStateType>({ ...defaultStateValues });
+  const [formErrorsState, setFormErrorsState] = useState({
+    usageFrequencyErr: "", 
+    appGoalsErr: "", 
+    userExperienceRatingErr: "",
+    dateOfBirthErr: ""
+  });
 
   const { usageFrequency, appGoals, userExperienceRating, improvementSuggestions, dateOfBirth } = state;
+  const { usageFrequencyErr, appGoalsErr, userExperienceRatingErr, dateOfBirthErr } = formErrorsState;
 
   const navigate = useNavigate();
 
@@ -22,11 +30,7 @@ const SurveyForm = () => {
       ...state,
       [name]: value
     })
-    // console.log(name, value)
   }
-  useEffect(() => {
-    console.log(state)
-  })
 
   const sendFormAndRedirect = async (bodyData: BodyDataType) => {
     try {
@@ -39,154 +43,227 @@ const SurveyForm = () => {
       });
       const result = await response.json();
 
-      if(response.status === 201) {
+      if (response.status === 201) {
         const submissionId = result["data"]["_id"];
         navigate(`/submission/${submissionId}`);
       } else {
         console.log(result);
-      }      
-    } catch(err) {
+      }
+    } catch (err) {
       console.log(err);
     }
   }
 
+  const isFormValid = () => {
+    const errors = { ...formErrorsState };
+    let isFormValid = true;
+    if(!usageFrequency.length) {
+      errors["usageFrequencyErr"] = "Please select this required field.";
+      isFormValid = false;
+    } else {
+      errors["usageFrequencyErr"] = "";
+    }
+    if(!appGoals.length) {
+      errors["appGoalsErr"] = "Please select this required field.";
+      isFormValid = false;
+    } else {
+      errors["appGoalsErr"] = "";      
+    }
+    if(!userExperienceRating) {
+      errors["userExperienceRatingErr"] = "Please select this required field.";
+      isFormValid = false;
+    } else {
+      errors["userExperienceRatingErr"] = "";      
+    } 
+    if(dateOfBirth && !isValidDate(dateOfBirth)) {
+      errors["dateOfBirthErr"] = "Age should be greater than 5years."
+      isFormValid = false;
+    } else {
+      errors["dateOfBirthErr"] = "";      
+    }
+    setFormErrorsState(errors);
+    return isFormValid;
+  }
 
   const handleSubmit = (event: any) => {
     event.preventDefault();
-    console.log(state)
 
     const userExperienceRatingIndex = state["userExperienceRating"];
     const userExperienceRatingLabel = userExperienceRatingSliderMarks[userExperienceRatingIndex].hoverLabel;
 
-    const dateOfBirth = state["dateOfBirth"]? state["dateOfBirth"].toISOString(): null;
+    const dateOfBirth = state["dateOfBirth"] ? state["dateOfBirth"].toISOString() : null;
 
     const bodyData: BodyDataType = {
-                                      ...state,
-                                      userExperienceRating: userExperienceRatingLabel,
-                                      dateOfBirth
-                                    };
-    sendFormAndRedirect(bodyData);                                    
-    console.log("Handle submit");
-    console.log(state)
+      ...state,
+      userExperienceRating: userExperienceRatingLabel,
+      dateOfBirth
+    };
+    if(isFormValid()) {
+      sendFormAndRedirect(bodyData);
+    }
   }
 
   return (
-    <div className="form-container">
-      <h1>App Review Survey</h1>
-
-      <form
-        autoComplete="off"
-        onSubmit={handleSubmit}
+    <Grid 
+      container 
+      justifyContent="center"
+    >
+      <Grid 
+        item xs={11} sm={8}
+        className="form-container"
       >
-        <FormControl
-          fullWidth
-        >
-          <InputLabel
-            id="usage-frequency-dropdown-label"
-          >
-            1. How often do you use this app?
-          </InputLabel>
-          <Select
-            labelId="usage-frequency-dropdown-label"
-            id="usage-frequency-dropdown"
-            onChange={handleChange}      
-            name="usageFrequency"   
-            value={usageFrequency}
-            label="1. How often do you use this app?"
-          >
-            <MenuItem value={"daily"}>Daily</MenuItem>
-            <MenuItem value={"weekly"}>Weekly</MenuItem>
-            <MenuItem value={"monthly"}>Monthly</MenuItem>
-            <MenuItem value={"rarely"}>Rarely</MenuItem>
-            <MenuItem value={"first time"}>First Time</MenuItem>
-          </Select>
-        </FormControl>
+        
+        <h1 className="heading">App Review Survey</h1>
 
-        <FormControl
-          fullWidth
+        <form
+          className="app-review-form"
+          autoComplete="off"
+          onSubmit={handleSubmit}
         >
-          <InputLabel
-            id="appgoal-label"
+          <FormControl
+            fullWidth
+            className="usage-frequency-form-control form-control"
           >
-            2. Main app goal?
-          </InputLabel>
-          <Select
-            labelId="appgoal-label"
-            id="appgoal-dropdown"
-            onChange={handleChange}
-            renderValue={(selected) => selected.join(', ')}
-            name="appGoals"         
-            value={appGoals}
-            label="1. How often do you use this app?"
-            multiple
-          >
-            {
-              appGoalsValues.map((goal) => {
-                const checked = appGoals.indexOf(goal) > -1;
+            <InputLabel
+              id="usage-frequency-dropdown-label"
+            >
+              1. How often do you use this app? <span className="required-indicator">*</span>
+            </InputLabel>
+            <Select
+              displayEmpty
+              labelId="usage-frequency-dropdown-label"
+              renderValue={(selected) => {
+                if(selected.length === 0) {
+                  return <span>Select</span>
+                }
                 return (
-                  <MenuItem key={goal} value={goal}>
-                    <Checkbox checked={checked} />
-                    <ListItemText primary={goal} />
-                  </MenuItem>
+                  <span>{selected}</span>
                 )
-              })
+              }
             }
-          </Select>
-        </FormControl>
+              id="usage-frequency-dropdown"
+              onChange={handleChange}
+              name="usageFrequency"
+              value={usageFrequency}
+              label="1. How often do you use this app?"
+            >
+              <MenuItem value={"Daily"}>Daily</MenuItem>
+              <MenuItem value={"Weekly"}>Weekly</MenuItem>
+              <MenuItem value={"Monthly"}>Monthly</MenuItem>
+              <MenuItem value={"Rarely"}>Rarely</MenuItem>
+              <MenuItem value={"First Time"}>First Time</MenuItem>
+            </Select>
+            {usageFrequencyErr && <p className="error-p">{usageFrequencyErr}</p>}
+          </FormControl>
 
-        <FormControl
-          fullWidth
-        >
-          <label htmlFor="user-experience-rating-slider">
-            3.Rate user experience (1-10):
-          </label>
-          <Slider
-            id="user-experience-rating-slider"
-            aria-label="User Experience Rating marks"
-            getAriaValueText={(value) => `${value}`}
-            step={1}
-            valueLabelDisplay="auto"
-            valueLabelFormat={(value) => userExperienceRatingSliderMarks[value].hoverLabel}
-            marks={userExperienceRatingSliderMarks}
-            min={0}
-            max={10}
-            name="userExperienceRating"
-            value={userExperienceRating}
-            onChange={handleChange}
-          />
-        </FormControl>
-
-        <FormControl 
-          fullWidth
-        >
-          <label
-            htmlFor="improvement-suggestions-textarea"
+          <FormControl
+            fullWidth
+            className="app-goals-form-control form-control"
           >
-            4.Suggest any improvements:
-          </label>
-          <TextField
-            name="improvementSuggestions"
-            value={improvementSuggestions}
-            id="improvement-suggestions-textarea"            
-            multiline
-            rows={4}
+            <InputLabel
+              id="appgoals-label"
+            >
+              2. Main app goal? <span className="required-indicator">*</span>
+            </InputLabel>
+            <Select
+              labelId="appgoals-label"
+              displayEmpty
+              id="appgoals-dropdown"
+              onChange={handleChange}            
+              renderValue={(selected) => {
+                  if(selected.length === 0) {
+                    return <span>Select</span>
+                  }
+                  return (
+                    <span>{selected.join(", ")}</span>
+                  )
+                }
+              }
+              name="appGoals"
+              value={appGoals}
+              label="2. Main app goal?"
+              multiple
+            >
+              {
+                appGoalsValues.map((goal) => {
+                  const checked = appGoals.indexOf(goal) > -1;
+                  return (
+                    <MenuItem key={goal} value={goal}>
+                      <Checkbox checked={checked} />
+                      <ListItemText primary={goal} />
+                    </MenuItem>
+                  )
+                })
+              }
+            </Select>
+            {appGoalsErr && <p className="error-p">{appGoalsErr}</p>}
+          </FormControl>
+
+          <FormControl
+            fullWidth
+            className="user-experience-slider-form-control form-control"
+          >
+            <label>
+              3. Rate user experience (1-10): <span className="required-indicator">*</span>
+            </label>
+            <div className="user-experience-rating-slider-container">
+              <Slider
+                id="user-experience-rating-slider"
+                aria-label="User Experience Rating marks"
+                getAriaValueText={(value) => `${value}`}
+                step={1}
+                valueLabelDisplay="auto"
+                valueLabelFormat={(value) => userExperienceRatingSliderMarks[value].hoverLabel}
+                marks={userExperienceRatingSliderMarks}
+                min={0}
+                max={10}
+                name="userExperienceRating"
+                value={userExperienceRating}
+                onChange={handleChange}
+              />
+            </div>
+            {userExperienceRatingErr && <p className="error-p">{userExperienceRatingErr}</p>}
+          </FormControl>
+
+          <FormControl
+            fullWidth
+            className="improvement-suggestions-form-control form-control"
+          >
+            <label
+              htmlFor="improvement-suggestions-textarea"
+            >
+              4. Suggest any improvements:
+            </label>
+            <TextField
+              name="improvementSuggestions"
+              value={improvementSuggestions}
+              id="improvement-suggestions-textarea"
+              multiline
+              rows={4}
+              onChange={handleChange}
+            />
+          </FormControl>
+
+
+          <DatePicker
+            name="dateOfBirth"
+            value={dateOfBirth}
             onChange={handleChange}
+            errorString={dateOfBirthErr}
           />
-        </FormControl>
 
-        <DatePicker 
-          name="dateOfBirth"
-          value={dateOfBirth}
-          onChange={handleChange}
-        />
-
-        <Button
-          type="submit"
-        >
-          Submit
-        </Button>
-      </form>
-    </div>
+          <div className="submit-btn-container"> 
+            <Button
+              type="submit"
+              variant="contained"
+            >
+              Submit
+            </Button>
+          </div>
+          
+        </form>
+      </Grid>
+    </Grid>
   )
 }
 
