@@ -1,5 +1,5 @@
-import { useState, useRef } from 'react';
-import { Select, MenuItem, FormControl, InputLabel, Checkbox, ListItemText, TextField, Button, Grid, OutlinedInput } from '@mui/material';
+import { useState } from 'react';
+import { Select, MenuItem, FormControl, InputLabel, Checkbox, ListItemText, TextField, Button, Grid } from '@mui/material';
 import Slider from '@mui/material/Slider';
 import { useNavigate } from 'react-router-dom';
 import "./survey-form.css";

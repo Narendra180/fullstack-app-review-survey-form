@@ -14,10 +14,6 @@
   position: relative;
 }
 
-.form-container .app-review-form {
-  /* max-width: 100%; */
-}
-
 .form-control label {
   margin-bottom: 1rem;
 }

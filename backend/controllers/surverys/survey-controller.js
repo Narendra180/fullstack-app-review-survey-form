@@ -16,7 +16,6 @@ const saveSurveyData = asyncHandler(async (req,res) => {
   formData["appGoals"] = formData["appGoals"].map(goal => goal.toLowerCase());
   formData["userExperienceRating"] = formData["userExperienceRating"].toLowerCase();
   formData["usageFrequency"] = formData["usageFrequency"].toLowerCase();
-  console.log(formData)
   const submission = await SubmissionModel.create({
     ...formData
   });

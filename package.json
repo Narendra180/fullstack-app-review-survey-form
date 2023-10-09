@@ -7,7 +7,8 @@
   "scripts": {
     "devserver": "nodemon backend/server.js",
     "client": "npm run dev --prefix frontend",
-    "dev": "concurrently \"npm run devserver\" \"npm run client\""
+    "dev": "concurrently \"npm run devserver\" \"npm run client\"",
+    "client-build": "npm run build --prefix frontend"
   },
   "author": "",
   "license": "ISC",

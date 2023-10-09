@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
-import { Button, Checkbox, Grid, ListItemText, MenuItem, Slider } from "@mui/material";
+import { Checkbox, Grid, ListItemText, MenuItem, Slider } from "@mui/material";
 import { appGoalsValues, userExperienceRatingSliderMarks } from "../../constants/constants";
 import "./submission-result.css";
 import { BodyDataType } from "../../types/types";
