@@ -29,7 +29,7 @@ const submissionSchema = mongoose.Schema({
     type: String,
     required: true,
     enum: {
-      values: ["very bad", "bad", "not good", "okay", "good", "very good", "excellent", "outstandin", "exceptional", "perfect"],
+      values: ["very bad", "bad", "not good", "okay", "good", "very good", "excellent", "outstanding", "exceptional", "perfect"],
       message: `{value} is not valid.`
     }
   },
