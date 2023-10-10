@@ -1,4 +1,6 @@
 import express from "express";
+import dotenv from "dotenv";
+dotenv.config();
 import { errorHandler, notFound } from "./middleware/not-found.js";
 import surveyRouter from "./routes//surveys/survey-routes.js";
 import path from "path";
